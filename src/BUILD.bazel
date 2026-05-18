@@ -1,0 +1,11 @@
+load("@rules_python//python:defs.bzl", "py_binary")
+
+py_binary(
+    name = "hello_bin",
+    srcs = ["hello.py"],
+    main = "hello.py",
+    deps = [
+        # Direct label access to the external third-party repo
+        "@pip//requests",
+    ],
+)
