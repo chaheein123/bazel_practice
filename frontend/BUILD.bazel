@@ -1,0 +1,22 @@
+load("@npm//:defs.bzl", "npm_link_all_packages")
+load("@npm//frontend:vite/package_json.bzl", vite_bin = "bin")
+
+# This links all your node_modules so Bazel can see them in its sandbox
+npm_link_all_packages(name = "node_modules")
+
+# This target compiles your frontend using Vite
+vite_bin.vite(
+    name = "build",
+    srcs = [
+        "index.html",
+        "package.json",
+        "vite.config.ts", # Change to .js if you aren't using TypeScript
+        "pnpm-lock.yaml",
+        "//frontend/src:src_files", # Links your actual source files
+        ":node_modules", # Links your dependencies
+    ],
+    outs = ["dist"], # Vite outputs compiled static assets into the 'dist' folder
+    args = ["build"],
+    chdir = package_name(),
+    visibility = ["//visibility:public"],
+)
