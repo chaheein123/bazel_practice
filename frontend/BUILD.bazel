@@ -1,22 +1,38 @@
 load("@npm//:defs.bzl", "npm_link_all_packages")
-load("@npm//frontend:vite/package_json.bzl", vite_bin = "bin")
+# Loads the Vite executable wrapper macro generated from your lockfile
+load("@npm//frontend:vite/package_json.bzl", "bin")
 
-# This links all your node_modules so Bazel can see them in its sandbox
+# Links your local packages into the sandbox node_modules
 npm_link_all_packages(name = "node_modules")
 
-# This target compiles your frontend using Vite
-vite_bin.vite(
-    name = "build",
-    srcs = [
+# Gather all your web source files cleanly
+filegroup(
+    name = "src_files",
+    srcs = glob([
+        "src/**/*",
+        "public/**/*",
+    ]) + [
         "index.html",
         "package.json",
-        "vite.config.ts", # Change to .js if you aren't using TypeScript
-        "pnpm-lock.yaml",
-        "//frontend/src:src_files", # Links your actual source files
-        ":node_modules", # Links your dependencies
+        "vite.config.js", # Change to vite.config.ts if you use TypeScript
     ],
-    outs = ["dist"], # Vite outputs compiled static assets into the 'dist' folder
-    args = ["build"],
-    chdir = package_name(),
-    visibility = ["//visibility:public"],
+)
+
+# Run the production vite build
+bin.vite(
+    name = "build",
+    srcs = [
+        ":node_modules",
+        ":src_files",
+    ],
+    # FIX: Explicitly tell Vite where its configuration file lives!
+    args = [
+        "build",
+        "--config",
+        "frontend/vite.config.js",
+    ],
+    env = {
+        "NODE_PATH": "frontend/node_modules",
+    },
+    out_dirs = ["dist"],
 )

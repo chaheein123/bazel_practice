@@ -25,3 +25,16 @@ pip.parse(
 
 # 3. EXPLICITLY BRING IT INTO SCOPE (Crucial Line!)
 use_repo(pip, "pip")
+
+npm = use_extension("@aspect_rules_js//npm:extensions.bzl", "npm")
+
+# FIX: Notice the colon is placed right after the root slashes!
+# MODULE.bazel
+
+npm.npm_translate_lock(
+    name = "npm",
+    # FIX: Keep the package label mapped to the frontend package directory
+    pnpm_lock = "//frontend:pnpm-lock.yaml", 
+)
+
+use_repo(npm, "npm")
