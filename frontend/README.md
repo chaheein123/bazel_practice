@@ -1,18 +1,22 @@
-# React + Vite
+# Frontends with Bazel
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+This folder contains various examples for writing JavaScript applications with Bazel.
 
-Currently, two official plugins are available:
+Bazel's [rules_js] uses the pnpm package manager. This folder is the root of a pnpm workspace.
+This allows npm packages within this monorepo to depend on each other.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+See the README.md file under each folder here to understand more about that package.
 
-## React Compiler
+## Linting
 
-The React Compiler is enabled on this template. See [this documentation](https://react.dev/learn/react-compiler) for more information.
+We demonstrate the usage of [rules_lint]. There are a few ways to wire this up, we show two:
+- *build failure*: in the `next.js` folder, `npm run lint` does a `bazel build` with a config setting that makes the build fail when lint violations are found.
+- *test failure*: in the `react/src` folder, an `eslint_test` target results in test failures when lint violations are found.
 
-Note: This will impact Vite dev & build performances.
+However, in both cases this inhibits creation of new lint rules or even upgrading the linter, because it requires updating the entire repository to fix or suppress
+new lint violations at the same time.
+We recommend showing lint results during code review instead.
+See <https://github.com/aspect-build/rules_lint/blob/main/docs/linting.md>
 
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+[rules_js]: https://docs.aspect.build/rules/aspect_rules_js
+[rules_lint]: https://github.com/aspect-build/rules_lint
